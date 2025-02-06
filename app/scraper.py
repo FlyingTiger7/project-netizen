@@ -23,14 +23,15 @@ def main():
     try:
         driver = setup_driver()
         # Let's use a simple news site as an example
-        driver.get("https://example.com")
+        driver.get("https://news.nate.com/view/20250127n06427?mid=n1008")
         
         # Get the page title
         title = driver.title
+        wait = WebDriverWait(driver, 10)
+        korean_title = driver.find_element(By.CLASS_NAME, "articleSubecjt").text
         
-        # Send as JSON
         message = {
-            "text": title + " This my first line of code",
+            "korean_title": korean_title,
             "status": "success"
         }
         

@@ -8,7 +8,7 @@ export default function Home() {
   useEffect(() => {
     fetch('/api/scrape')
       .then(res => res.json())
-      .then(data => setData(data.text))
+      .then(data => setData(data.korean_title))
       .catch(err => console.error('Error:', err));
   }, []);
 
