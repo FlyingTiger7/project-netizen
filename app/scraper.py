@@ -6,18 +6,13 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import json
-import sys  # Add this import
+import sys
 
 def setup_driver():
-    """Set up and return a Chrome WebDriver instance"""
-    # Set up Chrome options
     chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--start-maximized')
+    chrome_options.add_argument('--disable-notifications')
     
-    # Add some common options (you can modify these as needed)
-    chrome_options.add_argument('--start-maximized')  # Start with maximized window
-    chrome_options.add_argument('--disable-notifications')  # Disable notifications
-    
-    # Create and return the driver
     driver = webdriver.Chrome(
         service=Service(ChromeDriverManager().install()),
         options=chrome_options
@@ -25,10 +20,33 @@ def setup_driver():
     return driver
 
 def main():
-  
-
-        message = {"text": "Hello World from Python"}
-        print(json.dumps(message))
+    try:
+        driver = setup_driver()
+        # Let's use a simple news site as an example
+        driver.get("https://example.com")
         
+        # Get the page title
+        title = driver.title
+        
+        # Send as JSON
+        message = {
+            "text": title,
+            "status": "success"
+        }
+        
+        sys.stdout.write(json.dumps(message))
+        sys.stdout.flush()
+        
+    except Exception as e:
+        error_msg = {
+            "text": f"Error: {str(e)}",
+            "status": "error"
+        }
+        sys.stdout.write(json.dumps(error_msg))
+        sys.stdout.flush()
+    
+    finally:
+        driver.quit()
+
 if __name__ == "__main__":
     main()
