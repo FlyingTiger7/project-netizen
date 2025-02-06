@@ -5,6 +5,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+import json
+import sys  # Add this import
 
 def setup_driver():
     """Set up and return a Chrome WebDriver instance"""
@@ -23,27 +25,10 @@ def setup_driver():
     return driver
 
 def main():
-    try:
-        # Initialize the driver
-        driver = setup_driver()
-        
-        # Example: Navigate to a website (replace with your target URL)
-        driver.get("https://example.com")
-        
-        # Wait a moment to let the page load (you can adjust this)
-        time.sleep(3)
-        
-        # Example of how to find an element (uncomment and modify as needed)
-        # element = driver.find_element(By.CSS_SELECTOR, "your-css-selector")
-        # print(element.text)
-        
-    except Exception as e:
-        print(f"An error occurred: {e}")
-    
-    finally:
-        # Always make sure to close the driver
-        driver.quit()
-        print("Finished Scraping")
+  
 
+        message = {"text": "Hello World from Python"}
+        print(json.dumps(message))
+        
 if __name__ == "__main__":
     main()
