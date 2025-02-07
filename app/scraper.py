@@ -44,26 +44,61 @@ def get_image_url(driver):
     except Exception as e:
         print(f"Error getting main_image: {str(e)}")
         return None
+    
+def get_headline(driver):
+    try:
+        wait = WebDriverWait(driver, 10)
+        headline_element = wait.until(
+            EC.presence_of_element_located((By.CLASS_NAME, "articleSubecjt"))
+        )
+        return headline_element.text.strip()
+    
+    except Exception as e:
+        print(f"Error getting headline: {str(e)}")
+        return None
 
 
 def get_maincontent(driver):
     try:
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 2)
         content_div = wait.until(
             EC.presence_of_element_located((By.ID, "realArtcContents"))
+            
         )
         
         content = []
-        
-        for element in content_div.find_elements(By.TAG_NAME, "p"):
+        text_block = ""
+        found_br = False
+
+        for element in content_div.find_elements(By.TAG_NAME, "*"):
+            if element.get_attribute("class") == "articleMedia mediaImageZoom":
+                img = element.find_element(By.TAG_NAME, "img")
+                url = img.get_attribute("src")
+                if url and '///' in url:
+                    url = url.split('///').pop()
+                if not url.startswith('http'):
+                    url = 'https://' + url
+                content.append({
+                    "type": "image",
+                    "url": url
+                })
+            elif element.tag_name == "br":
+                if found_br:
+                    if text_block:
+                        content.append({
+                            "type": "text",
+                            "content": text_block
+                        })
+                    text_block = ""
+                found_br = not found_br
+            
+            elif found_br and element.text:
+                text_block += " " + element.text
+
+            
+        return content
     
-    
-    
-    
-    
-    
-    
-    
+
     except Exception as e:
         print(f"Error getting main content: {str(e)}")
         return None
@@ -82,7 +117,7 @@ def main():
         
         data = {
             "korean_title": get_headline(driver),
-            #"content": get_content(driver),
+            "content": get_maincontent(driver),
             #"comments": get_comments(driver)
         }
         
