@@ -22,15 +22,50 @@ def setup_driver():
 
 
 
-def get_headline(driver):
+
+def get_image_url(driver):
     try:
         wait = WebDriverWait(driver, 10)
-        headline_element = wait.until(
-            EC.presence_of_element_located((By.CLASS_NAME, "articleSubecjt"))
+        image_element = wait.until(
+            EC.presence_of_element_located((By.ID, "mainimg0"))
         )
-        return headline_element.text.strip()
+        url = image_element.get_attribute("src")
+
+        if url and '///' in url:
+            url = url.split('///').pop()
+        
+        if not url.startswith('http'):
+                url = 'https://' + url
+        return url 
+
+
+
+
     except Exception as e:
-        print(f"Error getting headline: {str(e)}")
+        print(f"Error getting main_image: {str(e)}")
+        return None
+
+
+def get_maincontent(driver):
+    try:
+        wait = WebDriverWait(driver, 10)
+        content_div = wait.until(
+            EC.presence_of_element_located((By.ID, "realArtcContents"))
+        )
+        
+        content = []
+        
+        for element in content_div.find_elements(By.TAG_NAME, "p"):
+    
+    
+    
+    
+    
+    
+    
+    
+    except Exception as e:
+        print(f"Error getting main content: {str(e)}")
         return None
         
 
@@ -47,7 +82,6 @@ def main():
         
         data = {
             "korean_title": get_headline(driver),
-            #"image": get_image(driver),
             #"content": get_content(driver),
             #"comments": get_comments(driver)
         }
