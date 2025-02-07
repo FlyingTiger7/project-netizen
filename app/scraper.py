@@ -19,23 +19,40 @@ def setup_driver():
     )
     return driver
 
+
+
+
+def get_headline(driver):
+    try:
+        wait = WebDriverWait(driver, 10)
+        headline_element = wait.until(
+            EC.presence_of_element_located((By.CLASS_NAME, "articleSubecjt"))
+        )
+        return headline_element.text.strip()
+    except Exception as e:
+        print(f"Error getting headline: {str(e)}")
+        return None
+        
+
+
+
 def main():
+
+    driver = None
     try:
         driver = setup_driver()
-        # Let's use a simple news site as an example
         driver.get("https://news.nate.com/view/20250127n06427?mid=n1008")
+
+        time.sleep(1)
         
-        # Get the page title
-        title = driver.title
-        wait = WebDriverWait(driver, 10)
-        korean_title = driver.find_element(By.CLASS_NAME, "articleSubecjt").text
-        
-        message = {
-            "korean_title": korean_title,
-            "status": "success"
+        data = {
+            "korean_title": get_headline(driver),
+            #"image": get_image(driver),
+            #"content": get_content(driver),
+            #"comments": get_comments(driver)
         }
         
-        sys.stdout.write(json.dumps(message))
+        sys.stdout.write(json.dumps(data))
         sys.stdout.flush()
         
     except Exception as e:
