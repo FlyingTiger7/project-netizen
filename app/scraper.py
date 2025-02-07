@@ -21,29 +21,6 @@ def setup_driver():
 
 
 
-
-
-def get_image_url(driver):
-    try:
-        wait = WebDriverWait(driver, 10)
-        image_element = wait.until(
-            EC.presence_of_element_located((By.ID, "mainimg0"))
-        )
-        url = image_element.get_attribute("src")
-
-        if url and '///' in url:
-            url = url.split('///').pop()
-        
-        if not url.startswith('http'):
-                url = 'https://' + url
-        return url 
-
-
-
-
-    except Exception as e:
-        print(f"Error getting main_image: {str(e)}")
-        return None
     
 def get_headline(driver):
     try:
@@ -60,44 +37,48 @@ def get_headline(driver):
 
 def get_maincontent(driver):
     try:
-        wait = WebDriverWait(driver, 2)
+        wait = WebDriverWait(driver, 10)
         content_div = wait.until(
             EC.presence_of_element_located((By.ID, "realArtcContents"))
-            
         )
         
         content = []
-        text_block = ""
-        found_br = False
+        
+        # Get text content
+        paragraphs = [
+            para.strip() 
+            for para in content_div.text.split('\n') 
+            if para.strip() and not para.startswith('==')
+        ]
+        
+        # Get images
+        images = []
+        image_divs = content_div.find_elements(By.CLASS_NAME, "articleMedia")
+        for div in image_divs:
+            img = div.find_element(By.TAG_NAME, "img")
+            url = img.get_attribute("src")
+            if url and '///' in url:
+                url = url.split('///').pop()
+            if not url.startswith('http'):
+                url = 'https://' + url
+            images.append({
+                "type": "image",
+                "url": url
+            })
 
-        for element in content_div.find_elements(By.TAG_NAME, "*"):
-            if element.get_attribute("class") == "articleMedia mediaImageZoom":
-                img = element.find_element(By.TAG_NAME, "img")
-                url = img.get_attribute("src")
-                if url and '///' in url:
-                    url = url.split('///').pop()
-                if not url.startswith('http'):
-                    url = 'https://' + url
-                content.append({
-                    "type": "image",
-                    "url": url
-                })
-            elif element.tag_name == "br":
-                if found_br:
-                    if text_block:
-                        content.append({
-                            "type": "text",
-                            "content": text_block
-                        })
-                    text_block = ""
-                found_br = not found_br
+        # Combine text and images
+        current_image = 0
+        for para in paragraphs:
+            content.append({
+                "type": "text",
+                "content": para
+            })
             
-            elif found_br and element.text:
-                text_block += " " + element.text
-
-            
+            if current_image < len(images):
+                content.append(images[current_image])
+                current_image += 1
+        
         return content
-    
 
     except Exception as e:
         print(f"Error getting main content: {str(e)}")
