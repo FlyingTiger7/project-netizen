@@ -5,7 +5,10 @@ import { useEffect, useState } from 'react';
 // First, define an interface for your data structure
 interface ScrapeData {
   korean_title: string;
-  image: string;
+  content: {
+    type: string;
+    info: string;
+  }[];
   // add other properties as needed
 }
 
@@ -31,11 +34,40 @@ export default function Home() {
     <main>
       <h1>Scraper Results</h1>
       <div>{data?.korean_title}</div>
-      <img 
-        id="mainimg0"
-        src={imageUrl} 
-        alt="Scraped main image"
-      />
+      <div className="article-content">
+          {data?.content.map((item, index) => {
+            // Debug logs
+            if (item.type === 'text') {
+                console.log('Raw text:', item.info);
+                console.log('String type:', typeof item.info);
+                console.log('Length:', item.info?.length);
+                // Log each character code to see what kind of newlines we have
+                console.log('Character codes:', 
+                    Array.from(item.info || '').map(c => c.charCodeAt(0))
+                );
+            }
+
+            return (
+                <div key={index}>
+                    {item.type === 'image' ? (
+                        <img 
+                            src={item.info}
+                            alt="Article image"
+                            className="article-image"
+                        />
+                    ) : (
+                        <p className="article-text" style={{ 
+                            whiteSpace: 'pre-wrap',
+                            marginBottom: '1rem',
+                            lineHeight: '1.6'  // Added for better readability
+                        }}>
+                            {item.info}
+                        </p>
+                    )}
+                </div>
+            );
+          })}
+      </div>
     </main>
   );
 }

@@ -63,20 +63,35 @@ def get_maincontent(driver):
                 url = 'https://' + url
             images.append({
                 "type": "image",
-                "url": url
+                "info": url
             })
 
-        # Combine text and images
+        # Combine text and images with proper paragraph breaks
         current_image = 0
+        current_text = ""
+        
         for para in paragraphs:
-            content.append({
-                "type": "text",
-                "content": para
-            })
+            if current_text:
+                current_text += "\n\n"  # Add double newline between paragraphs
+            current_text += para
             
+            # If we have an image next, add the accumulated text and then the image
             if current_image < len(images):
+                if current_text:
+                    content.append({
+                        "type": "text",
+                        "info": current_text
+                    })
+                    current_text = ""
                 content.append(images[current_image])
                 current_image += 1
+        
+        # Add any remaining text
+        if current_text:
+            content.append({
+                "type": "text",
+                "info": current_text
+            })
         
         return content
 
