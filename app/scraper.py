@@ -38,98 +38,65 @@ def get_headline(driver):
 def get_maincontent(driver):
     try:
         wait = WebDriverWait(driver, 10)
+        # Check if the element exists first
+        content_divs = driver.find_elements(By.ID, "realArtcContents")
+
         content_div = wait.until(
             EC.presence_of_element_located((By.ID, "realArtcContents"))
         )
         
-        content = []
+        # Get the full innerHTML
+        inner_html = content_div.get_attribute('innerHTML')
+        print("\nContent div innerHTML:")
+        print(inner_html[:500])  # First 500 chars
         
-        # Get text content
-        paragraphs = [
-            para.strip() 
-            for para in content_div.text.split('\n') 
-            if para.strip() and not para.startswith('==')
-        ]
+        # Also try getting text content for comparison
+        text_content = content_div.text
+        print("\nContent div text:")
+        print(text_content[:1000])
         
-        # Get images
-        images = []
-        image_divs = content_div.find_elements(By.CLASS_NAME, "articleMedia")
-        for div in image_divs:
-            img = div.find_element(By.TAG_NAME, "img")
-            url = img.get_attribute("src")
-            if url and '///' in url:
-                url = url.split('///').pop()
-            if not url.startswith('http'):
-                url = 'https://' + url
-            images.append({
-                "type": "image",
-                "info": url
-            })
-
-        # Combine text and images with proper paragraph breaks
-        current_image = 0
-        current_text = ""
-        
-        for para in paragraphs:
-            if current_text:
-                current_text += "\n\n"  # Add double newline between paragraphs
-            current_text += para
-            
-            # If we have an image next, add the accumulated text and then the image
-            if current_image < len(images):
-                if current_text:
-                    content.append({
-                        "type": "text",
-                        "info": current_text
-                    })
-                    current_text = ""
-                content.append(images[current_image])
-                current_image += 1
-        
-        # Add any remaining text
-        if current_text:
-            content.append({
-                "type": "text",
-                "info": current_text
-            })
-        
-        return content
+        return None
 
     except Exception as e:
         print(f"Error getting main content: {str(e)}")
+        print(f"Exception type: {type(e)}")
+        print(f"Exception args: {e.args}")
         return None
         
 
 
 
 def main():
-
     driver = None
     try:
         driver = setup_driver()
         driver.get("https://news.nate.com/view/20250127n06427?mid=n1008")
-
         time.sleep(1)
         
+        # Get the data
         data = {
             "korean_title": get_headline(driver),
-            "content": get_maincontent(driver),
-            #"comments": get_comments(driver)
+            "content": get_maincontent(driver)
         }
         
-        sys.stdout.write(json.dumps(data))
-        sys.stdout.flush()
+        # Print in a readable format
+        print("\n=== Article Data ===")
+        print(f"\nTitle: {data['korean_title']}")
+        print("\nContent:")
+        for i, item in enumerate(data['content'], 1):
+            print(f"\n--- Item {i} ---")
+            print(f"Type: {item['type']}")
+            if item['type'] == 'image':
+                print(f"Image URL: {item['info']}")
+            else:   
+                print(f"Text: {item['info']}\n")
         
     except Exception as e:
-        error_msg = {
-            "text": f"Error: {str(e)}",
-            "status": "error"
-        }
-        sys.stdout.write(json.dumps(error_msg))
-        sys.stdout.flush()
+        print(f"\nError: {str(e)}")
     
     finally:
-        driver.quit()
+        if driver:
+            driver.quit()
 
 if __name__ == "__main__":
     main()

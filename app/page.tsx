@@ -56,11 +56,7 @@ export default function Home() {
                             className="article-image"
                         />
                     ) : (
-                        <p className="article-text" style={{ 
-                            whiteSpace: 'pre-wrap',
-                            marginBottom: '1rem',
-                            lineHeight: '1.6'  // Added for better readability
-                        }}>
+                        <p className="article-text">
                             {item.info}
                         </p>
                     )}
