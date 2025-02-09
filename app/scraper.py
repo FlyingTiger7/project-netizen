@@ -68,19 +68,38 @@ def tester_function(driver):
     try:
 
         content_divs = driver.find_element(By.ID, "main").text
-        words = content_divs.split('\n')
+        paragraphs = content_divs.split('\n')
 
         article_content = []
-        for word in words:
-            if word.strip() == '':
+        for p in paragraphs:
+            if p.strip() == '':
                 continue
-            article_content.append(word)
-
+            article_content.append(p)
         
-        article_content.insert(2,"*******")
+        article = driver.find_element(By.ID, "main")
+        # Get all child elements
+        content_elements= article.find_elements(By.TAG_NAME, "*")
+
+        div_position_counter = 0
+        br_flag = False
+        for content in content_elements:
+            print(content.tag_name)
+            if content.tag_name == 'br':
+                if br_flag == True:
+                    div_position_counter += 1
+                br_flag = not (br_flag)
+
+            if content.tag_name == 'img':
+                article_content.insert(div_position_counter,"image")
+                div_position_counter += 1
+
 
         print(article_content)
-    
+
+
+        
+        
+       
         
 
         return article_content
