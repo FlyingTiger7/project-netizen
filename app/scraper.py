@@ -21,50 +21,29 @@ def setup_driver():
 
 
 
-    
-def get_headline(driver):
+def pull_comments(driver):
     try:
         wait = WebDriverWait(driver, 10)
-        headline_element = wait.until(
-            EC.presence_of_element_located((By.CLASS_NAME, "articleSubecjt"))
+        comment_div = wait.until(
+            EC.presence_of_element_located((By.CLASS_NAME, "ssul_comments"))
         )
-        return headline_element.text.strip()
     
-    except Exception as e:
-        print(f"Error getting headline: {str(e)}")
-        return None
+    
+    except Exception as e: 
+        print(f"Error: {str(e)}")
 
-
-def get_maincontent(driver):
+def pull_header(driver):
     try:
         wait = WebDriverWait(driver, 10)
-        # Check if the element exists first
-        content_divs = driver.find_elements(By.ID, "realArtcContents")
-
-        content_div = wait.until(
-            EC.presence_of_element_located((By.ID, "realArtcContents"))
+        header = wait.until(
+            EC.presence_of_element_located((By.CLASS_NAME, "ssul_header"))
         )
-        
-        # Get the full innerHTML
-        inner_html = content_div.get_attribute('innerHTML')
-        print("\nContent div innerHTML:")
-        print(inner_html[:500])  # First 500 chars
-        
-        # Also try getting text content for comparison
-        text_content = content_div.text
-        print("\nContent div text:")
-        print(text_content[:1000])
-        
-        return None
-
-    except Exception as e:
-        print(f"Error getting main content: {str(e)}")
-        print(f"Exception type: {type(e)}")
-        print(f"Exception args: {e.args}")
-        return None
+        return header.text
     
+    except Exception as e: 
+        print(f"Error: {str(e)}")
 
-def tester_function(driver):
+def pull_article(driver):
     try:
         wait = WebDriverWait(driver, 10)
 
@@ -116,7 +95,9 @@ def main():
         url = "https://news.nate.com/view/20250127n06427?mid=n1008"
         driver.get(url)
 
-        print(tester_function(driver))
+        pull_article(driver)
+
+        print("scraping complete")
 
         
     except Exception as e:
