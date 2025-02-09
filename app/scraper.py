@@ -25,8 +25,29 @@ def pull_comments(driver):
     try:
         wait = WebDriverWait(driver, 10)
         comment_div = wait.until(
-            EC.presence_of_element_located((By.CLASS_NAME, "ssul_comments"))
+            EC.presence_of_element_located((By.CLASS_NAME, "ssul_comment"))
         )
+
+        comments = comment_div.find_elements(By.TAG_NAME, "li")
+
+        comment_list = []
+
+        for comment in comments:
+            id = comment.find_element(By.TAG_NAME, "p").text
+            date = comment.find_element(By.TAG_NAME, "span").text
+            content = comment.find_element(By.TAG_NAME, "dd").text
+            upvotes = comment.find_element(By.TAG_NAME, "up").text
+            downvotes = comment.find_element(By.TAG_NAME, "down").text
+
+            comment_list.append({
+                "id": id,
+                "date": date,
+                "content": content,
+                "upvotes": upvotes,
+                "downvotes": downvotes
+            })
+
+        return comment_list
     
     
     except Exception as e: 
@@ -36,7 +57,7 @@ def pull_header(driver):
     try:
         wait = WebDriverWait(driver, 10)
         header = wait.until(
-            EC.presence_of_element_located((By.CLASS_NAME, "ssul_header"))
+            EC.presence_of_element_located((By.CLASS_NAME, "articleSubecjt"))
         )
         return header.text
     
@@ -92,13 +113,13 @@ def main():
     driver = None
     try:
         driver = setup_driver()
-        url = "https://news.nate.com/view/20250127n06427?mid=n1008"
+        url = "file:///Users/griffith/project-netizen/app/test.html"
         driver.get(url)
 
-        pull_article(driver)
-
-        print("scraping complete")
-
+        print("========== STARTING SCRAPING ==========")
+        print(pull_comments(driver))
+        print("========== SCRAPING COMPLETE ==========")
+        
         
     except Exception as e:
         print(f"Error: {str(e)}")
