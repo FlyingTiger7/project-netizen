@@ -5,8 +5,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
-import json
-import sys
+import os
+
 
 def setup_driver():
     chrome_options = webdriver.ChromeOptions()
@@ -66,11 +66,12 @@ def get_maincontent(driver):
 
 def tester_function(driver):
     try:
-        print("hello")
-    
-    except Exception as e:  
+
+        content_divs = driver.find_element(By.TAG_NAME, "br").text
+        print(content_divs)
+            
+    except Exception as e: 
         print(f"Error: {str(e)}")
-        
 
 
 
@@ -78,29 +79,13 @@ def main():
     driver = None
     try:
         driver = setup_driver()
-        driver.get("https://news.nate.com/view/20250127n06427?mid=n1008")
-        time.sleep(1)
-        
-        # Get the data
-        data = {
-            "korean_title": get_headline(driver),
-            "content": get_maincontent(driver)
-        }
-        
-        # Print in a readable format
-        print("\n=== Article Data ===")
-        print(f"\nTitle: {data['korean_title']}")
-        print("\nContent:")
-        for i, item in enumerate(data['content'], 1):
-            print(f"\n--- Item {i} ---")
-            print(f"Type: {item['type']}")
-            if item['type'] == 'image':
-                print(f"Image URL: {item['info']}")
-            else:   
-                print(f"Text: {item['info']}\n")
+        local_path = "file:///Users/griffith/project-netizen/app/test.html"
+        driver.get(local_path)
+
+        tester_function(driver)
         
     except Exception as e:
-        print(f"\nError: {str(e)}")
+        print(f"Error: {str(e)}")
     
     finally:
         if driver:
