@@ -74,7 +74,11 @@ def tester_function(driver):
         for p in paragraphs:
             if p.strip() == '':
                 continue
-            article_content.append(p)
+
+            article_content.append({
+                "type": "text",
+                "info": p
+            })
         
         article = driver.find_element(By.ID, "main")
         # Get all child elements
@@ -83,24 +87,18 @@ def tester_function(driver):
         div_position_counter = 0
         br_flag = False
         for content in content_elements:
-            print(content.tag_name)
             if content.tag_name == 'br':
                 if br_flag == True:
                     div_position_counter += 1
                 br_flag = not (br_flag)
 
             if content.tag_name == 'img':
-                article_content.insert(div_position_counter,"image")
+                image_info = {
+                    "type": "image",
+                    "info": content.get_attribute('src')
+                }
+                article_content.insert(div_position_counter,image_info)
                 div_position_counter += 1
-
-
-        print(article_content)
-
-
-        
-        
-       
-        
 
         return article_content
             
@@ -117,6 +115,7 @@ def main():
         driver.get(local_path)
 
         tester_function(driver)
+
         
     except Exception as e:
         print(f"Error: {str(e)}")
