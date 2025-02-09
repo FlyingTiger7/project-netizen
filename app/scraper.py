@@ -66,9 +66,12 @@ def get_maincontent(driver):
 
 def tester_function(driver):
     try:
+        wait = WebDriverWait(driver, 10)
 
-        content_divs = driver.find_element(By.ID, "main").text
-        paragraphs = content_divs.split('\n')
+        article = wait.until(
+            EC.presence_of_element_located((By.ID, "realArtcContents"))
+        )
+        paragraphs = article.text.split('\n')
 
         article_content = []
         for p in paragraphs:
@@ -79,8 +82,7 @@ def tester_function(driver):
                 "type": "text",
                 "info": p
             })
-        
-        article = driver.find_element(By.ID, "main")
+
         # Get all child elements
         content_elements= article.find_elements(By.TAG_NAME, "*")
 
@@ -111,10 +113,10 @@ def main():
     driver = None
     try:
         driver = setup_driver()
-        local_path = "file:///Users/griffith/project-netizen/app/test.html"
-        driver.get(local_path)
+        url = "https://news.nate.com/view/20250127n06427?mid=n1008"
+        driver.get(url)
 
-        tester_function(driver)
+        print(tester_function(driver))
 
         
     except Exception as e:
