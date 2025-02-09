@@ -62,6 +62,14 @@ def get_maincontent(driver):
         print(f"Exception type: {type(e)}")
         print(f"Exception args: {e.args}")
         return None
+    
+
+def tester_function(driver):
+    try:
+        print("hello")
+    
+    except Exception as e:  
+        print(f"Error: {str(e)}")
         
 
 
