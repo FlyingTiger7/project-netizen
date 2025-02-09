@@ -67,8 +67,23 @@ def get_maincontent(driver):
 def tester_function(driver):
     try:
 
-        content_divs = driver.find_element(By.TAG_NAME, "br").text
-        print(content_divs)
+        content_divs = driver.find_element(By.ID, "main").text
+        words = content_divs.split('\n')
+
+        article_content = []
+        for word in words:
+            if word.strip() == '':
+                continue
+            article_content.append(word)
+
+        
+        article_content.insert(2,"*******")
+
+        print(article_content)
+    
+        
+
+        return article_content
             
     except Exception as e: 
         print(f"Error: {str(e)}")
