@@ -33,18 +33,11 @@ def pull_comments(driver):
         comment_list = []
 
         for comment in comments:
-            id = comment.find_element(By.TAG_NAME, "p").text
-            date = comment.find_element(By.TAG_NAME, "span").text
-            content = comment.find_element(By.TAG_NAME, "dd").text
-            upvotes = comment.find_element(By.TAG_NAME, "up").text
-            downvotes = comment.find_element(By.TAG_NAME, "down").text
+            print(comment.tag_name)
+
 
             comment_list.append({
-                "id": id,
-                "date": date,
-                "content": content,
-                "upvotes": upvotes,
-                "downvotes": downvotes
+                "id": id
             })
 
         return comment_list
